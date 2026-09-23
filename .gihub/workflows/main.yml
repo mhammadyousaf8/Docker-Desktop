@@ -1,1 +1,32 @@
 
+YAML
+
+
+name: Docker Test Workflow
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  run-docker:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v4
+
+      - name: Test Docker Installation
+        run: docker info
+
+      - name: Spin up Keycloak Container
+        run: |
+          docker run -d --name keycloak -p 8080:8080 \
+            -e KC_BOOTSTRAP_ADMIN_USERNAME=admin \
+            -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin123 \
+            quay.io/keycloak/keycloak:latest start-dev
+
+      - name: Check Running Containers
+        run: docker ps
